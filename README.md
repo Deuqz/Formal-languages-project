@@ -2,7 +2,9 @@
 Шестаков Денис, Зеленцова Ирина
 
 #Синтаксис языка
+
 ##Объявления
+
 1. Функции
 fun function_name(arguments){operator}
 ##Выражения(expressions):
