@@ -15,7 +15,7 @@ fun main(){
         }
         else{
             y = sum(y, 2*y);
-        }
+        };
         x = x + 1;
-    }
+    };
 }
