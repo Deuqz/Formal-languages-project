@@ -1,59 +1,32 @@
 grammar L;
     start : funcs ;
 
-    funcs   : FUN name=NAME args body funcs #Func
-            | FUN name=NAME args body       #Func
+    funcs   : FUN name=NAME args body funcs #funcGlob
+            | FUN name=NAME args body            #func
             ;
 
-    args  : '(' args ')'  #Args
-          | NAME ',' args #Args
-          | NAME          #Args
+    args  : '(' ')'                 #argsEmpty
+          | '(' args ')'            #argsParen
+          | name=NAME ',' args      #argsVal
+          | name=NAME               #argsName
           ;
 
-    body  : '{' body '}'  #Body
-          | oper ';' body #Body
-          | oper ';'      #Body
+    body  : '{' '}'               #bodyEmpty
+          | '{' body '}'          #bodyParen
+          | oper ';' body         #bodyCode
+          | oper ';'              #bodyOper
           ;
 
-    oper  : SKIP          #opSkip
-          | IF '(' expr ')' body ELSE body #opIfElse
-          | IF '(' expr ')' body           #opIf
-          | WHILE '(' expr ')' body        #opWhile
-          | name=NAME '=' expr             #opBind
-          | name=NAME args                 #opFuncCall
+    oper  : name='skip'          #opSkip
           ;
 
+    FUN   : 'fun'  ;
+    IF    : 'if'   ;
+    ELSE  : 'else' ;
+    WHILE : 'while';
 
-    expr  : name=NAME args                     #exprFuncCall
-          | name=NAME                          #exprName
-          | exponentiation                     #exprExponent
-          | negative                           #exprNegative
-          | composition                        #exprComposition
-          | amount                             #exprAmount
-          | expr ('=='|'/='|'<='|'<'|'>'|'>=') #exprComp
-          | not                                #exprNot
-          | expr '&&' expr                     #exprAnd
-          | expr '||' expr                     #exprOr
-          | '(' expr ')'                       #exprParen
-
-    exponentiation : name=NAME '^' exponentiation    #expNameExp
-                   | '(' expr ')' '^' exponentiation #expExprExp
-                   | expr                            #expExpr
-
-    negative : '-' NAME #negName
-             | '-' '(' expr ')' #negExpr
-
-    composition : expr ('*'|'/') NAME
-                | 
-
-    FUN   : 'fun'   { print("fun");   };
-    IF    : 'if'    { print("if");    };
-    ELSE  : 'else'  { print("else");  };
-    WHILE : 'while' { print("while"); };
-    SKIP  : 'skip;  { print("skip");  };
-
-    NAME  : ^('fun ' | 'if ' | 'else ' | 'while ') s=('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|_|'0'..'9')* 
-          { print(s);};
+    NAME  : ('a'..'z'|'A'..'Z')('a'..'z'|'A'..'Z'|'_'|'0'..'9')* 
+          ;
 
     INT   : ('0'..'9')+ ;
 
