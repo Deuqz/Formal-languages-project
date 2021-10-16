@@ -12,9 +12,23 @@ import sys
 class AbstractTree:
     tree = list()
     elem = dict()
+
     def print(self):
         print(self.tree)
         print(self.elem)
+
+    def outfile(self, namefile):
+        with open(namefile, 'w') as f:
+            l = len(self.tree)
+            for i in range(l):
+                f.write("num: " + str(i) + "\n")
+                f.write("meaning: " + self.elem[i] + "\n")
+                if (len(self.tree[i]) != 0):
+                    f.write("childrens:\n")
+                    for x in self.tree[i]:
+                        f.write(str(x) + " ")
+                    f.write("\n")
+                f.write("\n")
     
     def addVer(self, par, s):
         self.tree.append([])
@@ -225,7 +239,8 @@ def main():
     parser = LParser(stream)
     tree = parser.start()
     absTree = CodeVisitor().visit(tree)
-    absTree.print()
+    #absTree.print()
+    absTree.outfile(sys.argv[1] + ".out")
 
 if __name__ == '__main__':
     main()
