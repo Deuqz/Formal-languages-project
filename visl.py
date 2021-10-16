@@ -9,23 +9,57 @@ from pprint import pprint
 import codecs
 import sys
 
-class EvalVisitor(LVisitor):
+class AbstractTree:
+    tree = list()
+    elem = dict()
+    def print(self):
+        print(self.tree)
+        print(self.elem)
+
+class CodeVisitor(LVisitor):
+    g = AbstractTree()
+    curVer = 0
+
     def visitStart(self, ctx):
         print("visitStart",ctx.getText())
+        self.g.tree.append([])
+        self.g.elem[0] = "__root__";
         self.visit(ctx.funcs())
+        return self.g
+
+
+    def commonVisitFunc(self, ctx, par):
+        self.g.tree.append([])
+        num = len(self.g.tree) - 1
+        self.g.tree[par].append(num)
+        self.g.elem[num] = ctx.name.text
+
+        self.g.tree.append([])
+        self.g.tree[num].append(num + 1)
+        self.g.elem[num + 1] = "__args__"
+        self.curVer = num + 1
+        self.visit(ctx.toArgs())
+
+        self.g.tree.append([])
+        self.g.tree[num].append(num + 2)
+        self.g.elem[num + 2] = "__body__"
+        self.curVer = num + 2
+        self.visit(ctx.toBody())
 
     def visitFuncGlob(self, ctx):
         print("VisitFuncGlob", ctx.getText())
         print("    nameFunc =", ctx.name.text)
-        self.visit(ctx.toArgs())
-        self.visit(ctx.toBody())
+
+        par = self.curVer
+        self.commonVisitFunc(ctx, par)
+
+        self.curVer = par
         self.visit(ctx.funcs())
 
     def visitFunc(self, ctx):
         print("VisitFunc", ctx.getText())
         print("    nameFunc =", ctx.name.text)
-        self.visit(ctx.toArgs())
-        self.visit(ctx.toBody())
+        self.commonVisitFunc(ctx, self.curVer)
 
     def visitToArgsEmpty(self, ctx):
         print("VisitToArgsEmpty", ctx.getText())
@@ -157,9 +191,8 @@ def main():
     stream = CommonTokenStream(lexer)
     parser = LParser(stream)
     tree = parser.start()
-    EvalVisitor().visit(tree)
-    #answer = EvalVisitor().visit(tree) 
-    #print(answer)
+    absTree = CodeVisitor().visit(tree)
+    absTree.print()
 
 if __name__ == '__main__':
     main()

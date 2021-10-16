@@ -38,9 +38,7 @@ grammar L;
               | val=expr                   #argsCallVal
               ;
 
-    expr  : atom=INT  '^'  expr                                   #exprExp1
-          | atom=NAME '^' expr                                    #exprExp1
-          | atom=STR  '^' expr                                    #exprExp1
+    expr  : atom=(NAME|INT|STR)  '^' expr                         #exprExp1
           | name=NAME toArgsCall '^' expr                         #exprExp2
           | '(' left=expr ')' '^' right=expr                      #exprExp3
           | op='-' expr                                           #exprOpUn
