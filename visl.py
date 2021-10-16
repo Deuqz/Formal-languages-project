@@ -159,28 +159,40 @@ class CodeVisitor(LVisitor):
     def visitExprExp1(self, ctx):
         print("VisitExprExp1", ctx.getText())
         print("    val =", ctx.atom.text)
+        self.curVer = self.g.addVer(self.curVer, '^')
+        self.g.addVer(self.curVer, ctx.atom.text)
         self.visit(ctx.expr())
 
     def visitExprExp2(self, ctx):
         print("VisitExprExp2", ctx.getText())
         print("    name =", ctx.name.text)
+        par = self.curVer = self.g.addVer(self.curVer, '^')
+        self.curVer = self.g.addVer(par, ctx.name.text)
         self.visit(ctx.toArgsCall())
+        self.curVer = par
         self.visit(ctx.expr())
 
     def visitExprExp3(self, ctx):
         print("VisitExprExp3", ctx.getText())
+        par = self.curVer = self.g.addVer(self.curVer, '^')
         self.visit(ctx.left)
+        self.curVer = par
         self.visit(ctx.right)
 
     def visitExprOpUn(self, ctx):
-        print("VisitExprExp2", ctx.getText())
+        print("VisitExprOpUn", ctx.getText())
         print("    op =", ctx.op.text)
+        par = self.curVer
+        self.curVer = self.g.addVer(self.curVer, ctx.op.text)
         self.visit(ctx.expr())
+        self.curVer = par
 
     def visitExprOpBin(self, ctx):
         print("VisitExprOpBin", ctx.getText())
         print("    op =", ctx.op.text)
+        par = self.curVer = self.g.addVer(self.curVer, ctx.op.text)
         self.visit(ctx.left)
+        self.curVer = par
         self.visit(ctx.right)
         
     def visitExprParen(self, ctx):
@@ -190,11 +202,15 @@ class CodeVisitor(LVisitor):
     def visitExprAtom(self, ctx):
         print("VisitExprAtom", ctx.getText())
         print("    nameVal =", ctx.atom.text)
+        self.g.addVer(self.curVer, ctx.atom.text)
 
     def visitExprFuncCall(self, ctx):
         print("VisitExprFuncCall", ctx.getText())
         print("    nameFunc =", ctx.name.text)
+        par = self.curVer
+        self.curVer = self.g.addVer(self.curVer, ctx.name.text)
         self.visit(ctx.toArgsCall())
+        self.curVer = par
 
 
 

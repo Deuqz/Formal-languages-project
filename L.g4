@@ -63,7 +63,7 @@ grammar L;
 
     INT   : ('0'..'9')+ ;
 
-    STR   : '"'.*?'"'
-          ;
+    STR   : '"'.*?'"' ;
 
+    COMMENT : '#'.*?'#'  -> skip ;
     WS    : [ \t\r\n]+ -> skip ;
