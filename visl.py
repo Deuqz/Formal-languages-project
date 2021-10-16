@@ -40,6 +40,7 @@ class AbstractTree:
 class CodeVisitor(LVisitor):
     g = AbstractTree()
     curVer = 0
+    inCompTree = False
 
     def visitStart(self, ctx):
         print("visitStart",ctx.getText())
@@ -204,10 +205,19 @@ class CodeVisitor(LVisitor):
     def visitExprOpBin(self, ctx):
         print("VisitExprOpBin", ctx.getText())
         print("    op =", ctx.op.text)
+        op = ctx.op.text
+        b = op == '==' or op == '/=' or op == '<' or op == '<=' or op == '>' or op == '>='
+        if (b and self.inCompTree):
+            print("Error! Operator " + ctx.op.text + " is not associative")
+            sys.exit(1)
+        elif(b):
+            self.inCompTree = True
         par = self.curVer = self.g.addVer(self.curVer, ctx.op.text)
         self.visit(ctx.left)
         self.curVer = par
         self.visit(ctx.right)
+        if (b):
+            self.inCompTree = False
         
     def visitExprParen(self, ctx):
         print("VisitExprParen", ctx.getText())
