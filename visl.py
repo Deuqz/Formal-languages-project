@@ -112,6 +112,12 @@ class EvalVisitor(LVisitor):
 
     def visitExprExp2(self, ctx):
         print("VisitExprExp2", ctx.getText())
+        print("    name =", ctx.name.text)
+        self.visit(ctx.toArgsCall())
+        self.visit(ctx.expr())
+
+    def visitExprExp3(self, ctx):
+        print("VisitExprExp3", ctx.getText())
         self.visit(ctx.left)
         self.visit(ctx.right)
 

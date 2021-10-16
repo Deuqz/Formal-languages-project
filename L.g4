@@ -38,9 +38,11 @@ grammar L;
               | val=expr                   #argsCallVal
               ;
 
-    expr  : atom=INT '^'  expr                                    #exprExp1
+    expr  : atom=INT  '^'  expr                                   #exprExp1
           | atom=NAME '^' expr                                    #exprExp1
-          | '(' left=expr ')' '^' right=expr                      #exprExp2
+          | atom=STR  '^' expr                                    #exprExp1
+          | name=NAME toArgsCall '^' expr                         #exprExp2
+          | '(' left=expr ')' '^' right=expr                      #exprExp3
           | op='-' expr                                           #exprOpUn
           | left=expr op=('*'|'/') right=expr                     #exprOpBin
           | left=expr op=('+'|'-') right=expr                     #exprOpBin
@@ -49,8 +51,7 @@ grammar L;
           | left=expr op='&&'      right=expr                     #exprOpBin
           | left=expr op='||'      right=expr                     #exprOpBin
           | '(' expr ')'                                          #exprParen
-          | atom=NAME                                             #exprAtom
-          | atom=INT                                              #exprAtom
+          | atom=(NAME|INT|STR)                                   #exprAtom
           | name=NAME toArgsCall                                  #exprFuncCall
           ;
 
@@ -63,5 +64,8 @@ grammar L;
           ;
 
     INT   : ('0'..'9')+ ;
+
+    STR   : '"'.*?'"'
+          ;
 
     WS    : [ \t\r\n]+ -> skip ;
