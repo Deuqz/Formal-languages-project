@@ -27,7 +27,6 @@ class CodeVisitor(LVisitor):
         self.visit(ctx.funcs())
         return self.g
 
-
     def commonVisitFunc(self, ctx, par):
         self.g.tree.append([])
         num = len(self.g.tree) - 1
@@ -35,15 +34,17 @@ class CodeVisitor(LVisitor):
         self.g.elem[num] = ctx.name.text
 
         self.g.tree.append([])
-        self.g.tree[num].append(num + 1)
-        self.g.elem[num + 1] = "__args__"
-        self.curVer = num + 1
+        num1 = len(self.g.tree) - 1
+        self.g.tree[num].append(num1)
+        self.g.elem[num1] = "__args__"
+        self.curVer = num1
         self.visit(ctx.toArgs())
 
         self.g.tree.append([])
-        self.g.tree[num].append(num + 2)
-        self.g.elem[num + 2] = "__body__"
-        self.curVer = num + 2
+        num2 = len(self.g.tree) - 1
+        self.g.tree[num].append(num2)
+        self.g.elem[num2] = "__body__"
+        self.curVer = num2
         self.visit(ctx.toBody())
 
     def visitFuncGlob(self, ctx):
@@ -68,14 +69,22 @@ class CodeVisitor(LVisitor):
         print("VisitToArgsNotEmpty", ctx.getText())
         self.visit(ctx.args())
 
+    def commonArgsVal(self, ctx):
+        self.g.tree.append([])
+        num = len(self.g.tree) - 1
+        self.g.elem[num] = ctx.name.text
+        self.g.tree[self.curVer].append(num)
+
     def visitArgsVals(self, ctx):
         print("VisitArgsVal", ctx.getText())
         print("    nameArg =", ctx.name.text)
+        self.commonArgsVal(ctx)
         self.visit(ctx.args())
 
     def visitArgsVal(self, ctx):
         print("VisitArgsName", ctx.getText())
         print("    nameArg =", ctx.name.text)
+        self.commonArgsVal(ctx)
 
     def visitToBodyEmpty(self, ctx):
         print("VisitToBodyEmpty", ctx.getText())
