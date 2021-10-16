@@ -15,6 +15,13 @@ class AbstractTree:
     def print(self):
         print(self.tree)
         print(self.elem)
+    
+    def addVer(self, par, s):
+        self.tree.append([])
+        num = len(self.tree) - 1
+        self.tree[par].append(num)
+        self.elem[num] = s
+        return num
 
 class CodeVisitor(LVisitor):
     g = AbstractTree()
@@ -28,23 +35,12 @@ class CodeVisitor(LVisitor):
         return self.g
 
     def commonVisitFunc(self, ctx, par):
-        self.g.tree.append([])
-        num = len(self.g.tree) - 1
-        self.g.tree[par].append(num)
-        self.g.elem[num] = ctx.name.text
+        num = self.g.addVer(par, ctx.name.text)
 
-        self.g.tree.append([])
-        num1 = len(self.g.tree) - 1
-        self.g.tree[num].append(num1)
-        self.g.elem[num1] = "__args__"
-        self.curVer = num1
+        self.curVer = self.g.addVer(num, "__args__")
         self.visit(ctx.toArgs())
 
-        self.g.tree.append([])
-        num2 = len(self.g.tree) - 1
-        self.g.tree[num].append(num2)
-        self.g.elem[num2] = "__body__"
-        self.curVer = num2
+        self.curVer = self.g.addVer(num, "__body__")
         self.visit(ctx.toBody())
 
     def visitFuncGlob(self, ctx):
@@ -69,22 +65,16 @@ class CodeVisitor(LVisitor):
         print("VisitToArgsNotEmpty", ctx.getText())
         self.visit(ctx.args())
 
-    def commonArgsVal(self, ctx):
-        self.g.tree.append([])
-        num = len(self.g.tree) - 1
-        self.g.elem[num] = ctx.name.text
-        self.g.tree[self.curVer].append(num)
-
     def visitArgsVals(self, ctx):
         print("VisitArgsVal", ctx.getText())
         print("    nameArg =", ctx.name.text)
-        self.commonArgsVal(ctx)
+        self.g.addVer(self.curVer, ctx.name.text)
         self.visit(ctx.args())
 
     def visitArgsVal(self, ctx):
         print("VisitArgsName", ctx.getText())
         print("    nameArg =", ctx.name.text)
-        self.commonArgsVal(ctx)
+        self.g.addVer(self.curVer, ctx.name.text)
 
     def visitToBodyEmpty(self, ctx):
         print("VisitToBodyEmpty", ctx.getText())
@@ -95,7 +85,9 @@ class CodeVisitor(LVisitor):
 
     def visitBodyCode(self, ctx):
         print("VisitBodyCode", ctx.getText())
+        par = self.curVer
         self.visit(ctx.oper())
+        self.curVer = par
         self.visit(ctx.body())
 
     def visitBodyOper(self, ctx):
@@ -105,31 +97,45 @@ class CodeVisitor(LVisitor):
     def visitOpSkip(self, ctx):
         print("VisitOpSkip", ctx.getText())
         print("    ", ctx.name.text)
+        self.g.addVer(self.curVer, "skip")
         
     def visitOpIfElse(self, ctx):
         print("VisitOpIfElse", ctx.getText())
+        par = self.g.addVer(self.curVer, "if")
+        self.curVer = self.g.addVer(par, "__expr__")
         self.visit(ctx.expr())
+        self.curVer = self.g.addVer(par, "__body__")
         self.visit(ctx.manage)
+        self.curVer = self.g.addVer(par, "__else__")
         self.visit(ctx.alternative)
 
     def visitOpIf(self, ctx):
         print("VisitOpIf", ctx.getText())
+        par = self.g.addVer(self.curVer, "if")
+        self.curVer = self.g.addVer(par, "__expr__")
         self.visit(ctx.expr())
+        self.curVer = self.g.addVer(par, "__body__")
         self.visit(ctx.toBody())
 
     def visitOpWhile(self, ctx):
         print("VisitOpWhile", ctx.getText())
+        par = self.g.addVer(self.curVer, "while")
+        self.curVer = self.g.addVer(par, "__expr__")
         self.visit(ctx.expr())
+        self.curVer = self.g.addVer(par, "__body__")
         self.visit(ctx.toBody())
     
     def visitOpBind(self, ctx):
         print("VisitOpBind", ctx.getText())
         print("    nameValToBind =", ctx.name.text)
+        self.curVer = self.g.addVer(self.curVer, "=")
+        self.g.addVer(self.curVer, ctx.name.text)
         self.visit(ctx.expr())
 
     def visitOpFuncCall(self, ctx):
         print("VisitOpFuncCall", ctx.getText())
         print("    nameFunc =", ctx.name.text)
+        self.curVer = self.g.addVer(self.curVer, ctx.name.text)
         self.visit(ctx.toArgsCall())
 
     def visitToArgsCallEmpty(self, ctx):
@@ -141,7 +147,9 @@ class CodeVisitor(LVisitor):
 
     def visitArgsCallVals(self, ctx):
         print("VisitArgsCallVals", ctx.getText())
+        par = self.curVer
         self.visit(ctx.val)
+        self.curVer = par
         self.visit(ctx.argsCall())
 
     def visitArgsCallVal(self, ctx):
