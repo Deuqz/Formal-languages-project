@@ -81,7 +81,7 @@ class EvalVisitor(LVisitor):
     
     def visitOpBind(self, ctx):
         print("VisitOpBind", ctx.getText())
-        print("    nameVal =", ctx.name.text)
+        print("    nameValToBind =", ctx.name.text)
         self.visit(ctx.expr())
 
     def visitOpFuncCall(self, ctx):
@@ -98,20 +98,46 @@ class EvalVisitor(LVisitor):
 
     def visitArgsCallVals(self, ctx):
         print("VisitArgsCallVals", ctx.getText())
-        print("    val =", ctx.val.text)
+        self.visit(ctx.val)
         self.visit(ctx.argsCall())
 
     def visitArgsCallVal(self, ctx):
         print("VisitArgsCallVal", ctx.getText())
-        print("    val =", ctx.val.text)
+        self.visit(ctx.val)
 
-    def visitExprName(self, ctx):
-        print("VisitExprName", ctx.getText())
-        print("    nameVal =", ctx.name.text)
+    def visitExprExp1(self, ctx):
+        print("VisitExprExp1", ctx.getText())
+        print("    val =", ctx.atom.text)
+        self.visit(ctx.expr())
 
-    def visitExprInt(self, ctx):
-        print("VisitExprInt", ctx.getText())
-        print("    numVal =", ctx.num.text)
+    def visitExprExp2(self, ctx):
+        print("VisitExprExp2", ctx.getText())
+        self.visit(ctx.left)
+        self.visit(ctx.right)
+
+    def visitExprOpUn(self, ctx):
+        print("VisitExprExp2", ctx.getText())
+        print("    op =", ctx.op.text)
+        self.visit(ctx.expr())
+
+    def visitExprOpBin(self, ctx):
+        print("VisitExprOpBin", ctx.getText())
+        print("    op =", ctx.op.text)
+        self.visit(ctx.left)
+        self.visit(ctx.right)
+        
+    def visitExprParen(self, ctx):
+        print("VisitExprParen", ctx.getText())
+        self.visit(ctx.expr())
+    
+    def visitExprAtom(self, ctx):
+        print("VisitExprAtom", ctx.getText())
+        print("    nameVal =", ctx.atom.text)
+
+    def visitExprFuncCall(self, ctx):
+        print("VisitExprFuncCall", ctx.getText())
+        print("    nameFunc =", ctx.name.text)
+        self.visit(ctx.toArgsCall())
 
 
 

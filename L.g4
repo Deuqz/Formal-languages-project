@@ -9,37 +9,49 @@ grammar L;
            | '(' args ')'        #toArgsNotEmpty
            ;
 
-    args  : name=NAME ',' args      #argsVals
-          | name=NAME               #argsVal
+    args  : name=NAME ',' args   #argsVals
+          | name=NAME            #argsVal
           ;
     
-    toBody : '{' '}'              #toBodyEmpty
-           | '{' body '}'         #toBodyNotEmpty
+    toBody : '{' '}'             #toBodyEmpty
+           | '{' body '}'        #toBodyNotEmpty
            ;
 
-    body  : oper ';' body         #bodyCode
-          | oper ';'              #bodyOper
+    body  : oper ';' body        #bodyCode
+          | oper ';'             #bodyOper
           ;
 
 
-    oper  : name=NAME '=' expr                                #opBind
-          | name='skip'                                       #opSkip
-          | IF '(' expr ')' manage=toBody ELSE alternative=toBody #opIfElse
-          | IF '(' expr ')' toBody                              #opIf
-          | WHILE '(' expr ')' toBody                           #opWhile
+    oper  : name=NAME '=' expr                                      #opBind
+          | name='skip'                                             #opSkip
+          | IF '(' expr ')' manage=toBody ELSE alternative=toBody   #opIfElse
+          | IF '(' expr ')' toBody                                  #opIf
+          | WHILE '(' expr ')' toBody                               #opWhile
           | name=NAME toArgsCall                                    #opFuncCall
           ;
 
-    toArgsCall : '(' ')'             #toArgsCallEmpty
+    toArgsCall : '(' ')'                 #toArgsCallEmpty
                | '(' argsCall ')'        #toArgsCallNotEmpty
                ;
 
-    argsCall  : val=INT ',' argsCall      #argsCallVals
-              | val=INT                   #argsCallVal
+    argsCall  : val=expr ',' argsCall      #argsCallVals
+              | val=expr                   #argsCallVal
               ;
 
-    expr  : name=NAME                          #exprName
-          | num=INT                            #exprInt
+    expr  : atom=INT '^'  expr                                    #exprExp1
+          | atom=NAME '^' expr                                    #exprExp1
+          | '(' left=expr ')' '^' right=expr                      #exprExp2
+          | op='-' expr                                           #exprOpUn
+          | left=expr op=('*'|'/') right=expr                     #exprOpBin
+          | left=expr op=('+'|'-') right=expr                     #exprOpBin
+          | left=expr op=('=='|'/='|'<='|'<'|'>='|'>') right=expr #exprOpBin
+          | op='!' expr                                           #exprOpUn
+          | left=expr op='&&'      right=expr                     #exprOpBin
+          | left=expr op='||'      right=expr                     #exprOpBin
+          | '(' expr ')'                                          #exprParen
+          | atom=NAME                                             #exprAtom
+          | atom=INT                                              #exprAtom
+          | name=NAME toArgsCall                                  #exprFuncCall
           ;
 
     FUN   : 'fun'  ;
@@ -51,7 +63,5 @@ grammar L;
           ;
 
     INT   : ('0'..'9')+ ;
-
-    ARGFUNC : (INT | NAME) ;
 
     WS    : [ \t\r\n]+ -> skip ;

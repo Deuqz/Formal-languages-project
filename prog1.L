@@ -11,6 +11,7 @@ fun main(){
     y = 1;
     while(x < 10){
         if (x + 5 < 10){
+            smth();
             y = sum(y, y);
         }
         else{
