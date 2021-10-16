@@ -1,23 +1,45 @@
 grammar L;
     start : funcs ;
 
-    funcs   : FUN name=NAME args body funcs #funcGlob
-            | FUN name=NAME args body            #func
+    funcs   : FUN name=NAME toArgs toBody funcs      #funcGlob
+            | FUN name=NAME toArgs toBody            #func
             ;
 
-    args  : '(' ')'                 #argsEmpty
-          | '(' args ')'            #argsParen
-          | name=NAME ',' args      #argsVal
-          | name=NAME               #argsName
-          ;
+    toArgs : '(' ')'             #toArgsEmpty
+           | '(' args ')'        #toArgsNotEmpty
+           ;
 
-    body  : '{' '}'               #bodyEmpty
-          | '{' body '}'          #bodyParen
-          | oper ';' body         #bodyCode
+    args  : name=NAME ',' args      #argsVals
+          | name=NAME               #argsVal
+          ;
+    
+    toBody : '{' '}'              #toBodyEmpty
+           | '{' body '}'         #toBodyNotEmpty
+           ;
+
+    body  : oper ';' body         #bodyCode
           | oper ';'              #bodyOper
           ;
 
-    oper  : name='skip'          #opSkip
+
+    oper  : name=NAME '=' expr                                #opBind
+          | name='skip'                                       #opSkip
+          | IF '(' expr ')' manage=toBody ELSE alternative=toBody #opIfElse
+          | IF '(' expr ')' toBody                              #opIf
+          | WHILE '(' expr ')' toBody                           #opWhile
+          | name=NAME toArgsCall                                    #opFuncCall
+          ;
+
+    toArgsCall : '(' ')'             #toArgsCallEmpty
+               | '(' argsCall ')'        #toArgsCallNotEmpty
+               ;
+
+    argsCall  : val=INT ',' argsCall      #argsCallVals
+              | val=INT                   #argsCallVal
+              ;
+
+    expr  : name=NAME                          #exprName
+          | num=INT                            #exprInt
           ;
 
     FUN   : 'fun'  ;
@@ -29,5 +51,7 @@ grammar L;
           ;
 
     INT   : ('0'..'9')+ ;
+
+    ARGFUNC : (INT | NAME) ;
 
     WS    : [ \t\r\n]+ -> skip ;

@@ -17,37 +17,37 @@ class EvalVisitor(LVisitor):
     def visitFuncGlob(self, ctx):
         print("VisitFuncGlob", ctx.getText())
         print("    nameFunc =", ctx.name.text)
-        self.visit(ctx.args())
-        self.visit(ctx.body())
+        self.visit(ctx.toArgs())
+        self.visit(ctx.toBody())
         self.visit(ctx.funcs())
 
     def visitFunc(self, ctx):
         print("VisitFunc", ctx.getText())
         print("    nameFunc =", ctx.name.text)
+        self.visit(ctx.toArgs())
+        self.visit(ctx.toBody())
+
+    def visitToArgsEmpty(self, ctx):
+        print("VisitToArgsEmpty", ctx.getText())
+
+    def visitToArgsNotEmpty(self, ctx):
+        print("VisitToArgsNotEmpty", ctx.getText())
         self.visit(ctx.args())
-        self.visit(ctx.body())
 
-    def visitArgsEmpty(self, ctx):
-        print("VisitArgsEmpty", ctx.getText())
-
-    def visitArgsParen(self, ctx):
-        print("VisitArgsParen", ctx.getText())
-        self.visit(ctx.args())
-
-    def visitArgsVal(self, ctx):
+    def visitArgsVals(self, ctx):
         print("VisitArgsVal", ctx.getText())
         print("    nameArg =", ctx.name.text)
         self.visit(ctx.args())
 
-    def visitArgsName(self, ctx):
+    def visitArgsVal(self, ctx):
         print("VisitArgsName", ctx.getText())
         print("    nameArg =", ctx.name.text)
 
-    def visitBodyEmpty(self, ctx):
-        print("VisitBodyEmpty", ctx.getText())
+    def visitToBodyEmpty(self, ctx):
+        print("VisitToBodyEmpty", ctx.getText())
 
-    def visitBodyParen(self, ctx):
-        print("VisitBodyParen", ctx.getText())
+    def visitToBodyNotEmpty(self, ctx):
+        print("VisitToBodyNotEmpty", ctx.getText())
         self.visit(ctx.body())
 
     def visitBodyCode(self, ctx):
@@ -62,6 +62,56 @@ class EvalVisitor(LVisitor):
     def visitOpSkip(self, ctx):
         print("VisitOpSkip", ctx.getText())
         print("    ", ctx.name.text)
+        
+    def visitOpIfElse(self, ctx):
+        print("VisitOpIfElse", ctx.getText())
+        self.visit(ctx.expr())
+        self.visit(ctx.manage)
+        self.visit(ctx.alternative)
+
+    def visitOpIf(self, ctx):
+        print("VisitOpIf", ctx.getText())
+        self.visit(ctx.expr())
+        self.visit(ctx.toBody())
+
+    def visitOpWhile(self, ctx):
+        print("VisitOpWhile", ctx.getText())
+        self.visit(ctx.expr())
+        self.visit(ctx.toBody())
+    
+    def visitOpBind(self, ctx):
+        print("VisitOpBind", ctx.getText())
+        print("    nameVal =", ctx.name.text)
+        self.visit(ctx.expr())
+
+    def visitOpFuncCall(self, ctx):
+        print("VisitOpFuncCall", ctx.getText())
+        print("    nameFunc =", ctx.name.text)
+        self.visit(ctx.toArgsCall())
+
+    def visitToArgsCallEmpty(self, ctx):
+        print("VisitToArgsCallEmpty", ctx.getText())
+
+    def visitToArgsCallNotEmpty(self, ctx):
+        print("VisitToArgsCallNotEmpty", ctx.getText())
+        self.visit(ctx.argsCall())
+
+    def visitArgsCallVals(self, ctx):
+        print("VisitArgsCallVals", ctx.getText())
+        print("    val =", ctx.val.text)
+        self.visit(ctx.argsCall())
+
+    def visitArgsCallVal(self, ctx):
+        print("VisitArgsCallVal", ctx.getText())
+        print("    val =", ctx.val.text)
+
+    def visitExprName(self, ctx):
+        print("VisitExprName", ctx.getText())
+        print("    nameVal =", ctx.name.text)
+
+    def visitExprInt(self, ctx):
+        print("VisitExprInt", ctx.getText())
+        print("    numVal =", ctx.num.text)
 
 
 
