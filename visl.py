@@ -249,7 +249,7 @@ def main():
     parser = LParser(stream)
     tree = parser.start()
     absTree = CodeVisitor().visit(tree)
-    #absTree.print()
+    absTree.print()
     absTree.outfile(sys.argv[1] + ".out")
 
 if __name__ == '__main__':
