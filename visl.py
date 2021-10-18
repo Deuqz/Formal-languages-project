@@ -8,6 +8,7 @@ from pprint import pprint
 
 import codecs
 import sys
+import os
 
 class AbstractTree:
     tree = list()
@@ -17,8 +18,8 @@ class AbstractTree:
         print(self.tree)
         print(self.elem)
 
-    def outfile(self, namefile):
-        with open(namefile, 'w') as f:
+    def outFile(self, nameFile):
+        with open(nameFile, 'w') as f:
             l = len(self.tree)
             for i in range(l):
                 f.write("num: " + str(i) + "\n")
@@ -29,6 +30,28 @@ class AbstractTree:
                         f.write(str(x) + " ")
                     f.write("\n")
                 f.write("\n")
+    
+    def makePng(self, nameFile):
+        with open(nameFile + "forPNG", 'w') as f:
+            l = len(self.tree)
+            f.write("digraph{\n")
+            for i in range(l):
+                if self.elem[i] == ">":
+                    f.write("    " + str(i) + " [label=<&gt;>]\n")
+                elif self.elem[i] == "<":
+                    f.write("    " + str(i) + " [label=<&lt;>]\n")
+                elif self.elem[i] == "&&":
+                    f.write("    " + str(i) + " [label=<&amp;&amp;>]\n")
+                else:
+                    f.write("    " + str(i) + " [label=<" + self.elem[i] + ">]\n")
+            for i in range(l):
+                if (len(self.tree[i]) == 0): continue
+                for x in self.tree[i]:
+                    f.write("    " + str(i) + " -> " + str(x) + "\n")
+            f.write("}")
+        os.system("dot -Tpng " + nameFile + "forPNG > " + nameFile + ".png")
+        os.system("rm " + nameFile + "forPNG")
+
     
     def addVer(self, par, s):
         self.tree.append([])
@@ -43,7 +66,7 @@ class CodeVisitor(LVisitor):
     inCompTree = False
 
     def visitStart(self, ctx):
-        print("visitStart",ctx.getText())
+        #print("visitStart",ctx.getText())
         self.g.tree.append([])
         self.g.elem[0] = "__root__";
         self.visit(ctx.funcs())
@@ -59,8 +82,8 @@ class CodeVisitor(LVisitor):
         self.visit(ctx.toBody())
 
     def visitFuncGlob(self, ctx):
-        print("VisitFuncGlob", ctx.getText())
-        print("    nameFunc =", ctx.name.text)
+        #print("VisitFuncGlob", ctx.getText())
+        #print("    nameFunc =", ctx.name.text)
 
         par = self.curVer
         self.commonVisitFunc(ctx, par)
@@ -69,53 +92,55 @@ class CodeVisitor(LVisitor):
         self.visit(ctx.funcs())
 
     def visitFunc(self, ctx):
-        print("VisitFunc", ctx.getText())
-        print("    nameFunc =", ctx.name.text)
+        #print("VisitFunc", ctx.getText())
+        #print("    nameFunc =", ctx.name.text)
         self.commonVisitFunc(ctx, self.curVer)
 
     def visitToArgsEmpty(self, ctx):
-        print("VisitToArgsEmpty", ctx.getText())
+        #print("VisitToArgsEmpty", ctx.getText())
+        pass
 
     def visitToArgsNotEmpty(self, ctx):
-        print("VisitToArgsNotEmpty", ctx.getText())
+        #print("VisitToArgsNotEmpty", ctx.getText())
         self.visit(ctx.args())
 
     def visitArgsVals(self, ctx):
-        print("VisitArgsVal", ctx.getText())
-        print("    nameArg =", ctx.name.text)
+        #print("VisitArgsVal", ctx.getText())
+        #print("    nameArg =", ctx.name.text)
         self.g.addVer(self.curVer, ctx.name.text)
         self.visit(ctx.args())
 
     def visitArgsVal(self, ctx):
-        print("VisitArgsName", ctx.getText())
-        print("    nameArg =", ctx.name.text)
+        #print("VisitArgsName", ctx.getText())
+        #print("    nameArg =", ctx.name.text)
         self.g.addVer(self.curVer, ctx.name.text)
 
     def visitToBodyEmpty(self, ctx):
-        print("VisitToBodyEmpty", ctx.getText())
+        #print("VisitToBodyEmpty", ctx.getText())
+        pass
 
     def visitToBodyNotEmpty(self, ctx):
-        print("VisitToBodyNotEmpty", ctx.getText())
+        #print("VisitToBodyNotEmpty", ctx.getText())
         self.visit(ctx.body())
 
     def visitBodyCode(self, ctx):
-        print("VisitBodyCode", ctx.getText())
+        #print("VisitBodyCode", ctx.getText())
         par = self.curVer
         self.visit(ctx.oper())
         self.curVer = par
         self.visit(ctx.body())
 
     def visitBodyOper(self, ctx):
-        print("VisitBodyOper", ctx.getText())
+        #print("VisitBodyOper", ctx.getText())
         self.visit(ctx.oper())
 
     def visitOpSkip(self, ctx):
-        print("VisitOpSkip", ctx.getText())
-        print("    ", ctx.name.text)
+        #print("VisitOpSkip", ctx.getText())
+        #print("    ", ctx.name.text)
         self.g.addVer(self.curVer, "skip")
         
     def visitOpIfElse(self, ctx):
-        print("VisitOpIfElse", ctx.getText())
+        #print("VisitOpIfElse", ctx.getText())
         par = self.g.addVer(self.curVer, "if")
         self.curVer = self.g.addVer(par, "__expr__")
         self.visit(ctx.expr())
@@ -125,7 +150,7 @@ class CodeVisitor(LVisitor):
         self.visit(ctx.alternative)
 
     def visitOpIf(self, ctx):
-        print("VisitOpIf", ctx.getText())
+        #print("VisitOpIf", ctx.getText())
         par = self.g.addVer(self.curVer, "if")
         self.curVer = self.g.addVer(par, "__expr__")
         self.visit(ctx.expr())
@@ -133,7 +158,7 @@ class CodeVisitor(LVisitor):
         self.visit(ctx.toBody())
 
     def visitOpWhile(self, ctx):
-        print("VisitOpWhile", ctx.getText())
+        #print("VisitOpWhile", ctx.getText())
         par = self.g.addVer(self.curVer, "while")
         self.curVer = self.g.addVer(par, "__expr__")
         self.visit(ctx.expr())
@@ -141,46 +166,47 @@ class CodeVisitor(LVisitor):
         self.visit(ctx.toBody())
     
     def visitOpBind(self, ctx):
-        print("VisitOpBind", ctx.getText())
-        print("    nameValToBind =", ctx.name.text)
+        #print("VisitOpBind", ctx.getText())
+        #print("    nameValToBind =", ctx.name.text)
         self.curVer = self.g.addVer(self.curVer, "=")
         self.g.addVer(self.curVer, ctx.name.text)
         self.visit(ctx.expr())
 
     def visitOpFuncCall(self, ctx):
-        print("VisitOpFuncCall", ctx.getText())
-        print("    nameFunc =", ctx.name.text)
+        #print("VisitOpFuncCall", ctx.getText())
+        #print("    nameFunc =", ctx.name.text)
         self.curVer = self.g.addVer(self.curVer, ctx.name.text)
         self.visit(ctx.toArgsCall())
 
     def visitToArgsCallEmpty(self, ctx):
-        print("VisitToArgsCallEmpty", ctx.getText())
+        #print("VisitToArgsCallEmpty", ctx.getText())
+        pass
 
     def visitToArgsCallNotEmpty(self, ctx):
-        print("VisitToArgsCallNotEmpty", ctx.getText())
+        #print("VisitToArgsCallNotEmpty", ctx.getText())
         self.visit(ctx.argsCall())
 
     def visitArgsCallVals(self, ctx):
-        print("VisitArgsCallVals", ctx.getText())
+        #print("VisitArgsCallVals", ctx.getText())
         par = self.curVer
         self.visit(ctx.val)
         self.curVer = par
         self.visit(ctx.argsCall())
 
     def visitArgsCallVal(self, ctx):
-        print("VisitArgsCallVal", ctx.getText())
+        #print("VisitArgsCallVal", ctx.getText())
         self.visit(ctx.val)
 
     def visitExprExp1(self, ctx):
-        print("VisitExprExp1", ctx.getText())
-        print("    val =", ctx.atom.text)
+        #print("VisitExprExp1", ctx.getText())
+        #print("    val =", ctx.atom.text)
         self.curVer = self.g.addVer(self.curVer, '^')
         self.g.addVer(self.curVer, ctx.atom.text)
         self.visit(ctx.expr())
 
     def visitExprExp2(self, ctx):
-        print("VisitExprExp2", ctx.getText())
-        print("    name =", ctx.name.text)
+        #print("VisitExprExp2", ctx.getText())
+        #print("    name =", ctx.name.text)
         par = self.curVer = self.g.addVer(self.curVer, '^')
         self.curVer = self.g.addVer(par, ctx.name.text)
         self.visit(ctx.toArgsCall())
@@ -188,23 +214,23 @@ class CodeVisitor(LVisitor):
         self.visit(ctx.expr())
 
     def visitExprExp3(self, ctx):
-        print("VisitExprExp3", ctx.getText())
+        #print("VisitExprExp3", ctx.getText())
         par = self.curVer = self.g.addVer(self.curVer, '^')
         self.visit(ctx.left)
         self.curVer = par
         self.visit(ctx.right)
 
     def visitExprOpUn(self, ctx):
-        print("VisitExprOpUn", ctx.getText())
-        print("    op =", ctx.op.text)
+        #print("VisitExprOpUn", ctx.getText())
+        #print("    op =", ctx.op.text)
         par = self.curVer
         self.curVer = self.g.addVer(self.curVer, ctx.op.text)
         self.visit(ctx.expr())
         self.curVer = par
 
     def visitExprOpBin(self, ctx):
-        print("VisitExprOpBin", ctx.getText())
-        print("    op =", ctx.op.text)
+        #print("VisitExprOpBin", ctx.getText())
+        #print("    op =", ctx.op.text)
         op = ctx.op.text
         b = op == '==' or op == '/=' or op == '<' or op == '<=' or op == '>' or op == '>='
         if (b and self.inCompTree):
@@ -220,17 +246,17 @@ class CodeVisitor(LVisitor):
             self.inCompTree = False
         
     def visitExprParen(self, ctx):
-        print("VisitExprParen", ctx.getText())
+        #print("VisitExprParen", ctx.getText())
         self.visit(ctx.expr())
     
     def visitExprAtom(self, ctx):
-        print("VisitExprAtom", ctx.getText())
-        print("    nameVal =", ctx.atom.text)
+        #print("VisitExprAtom", ctx.getText())
+        #print("    nameVal =", ctx.atom.text)
         self.g.addVer(self.curVer, ctx.atom.text)
 
     def visitExprFuncCall(self, ctx):
-        print("VisitExprFuncCall", ctx.getText())
-        print("    nameFunc =", ctx.name.text)
+        #print("VisitExprFuncCall", ctx.getText())
+        #print("    nameFunc =", ctx.name.text)
         par = self.curVer
         self.curVer = self.g.addVer(self.curVer, ctx.name.text)
         self.visit(ctx.toArgsCall())
@@ -249,8 +275,10 @@ def main():
     parser = LParser(stream)
     tree = parser.start()
     absTree = CodeVisitor().visit(tree)
-    absTree.print()
-    absTree.outfile(sys.argv[1] + ".out")
+    print("Complete parse")
+    #absTree.print()
+    absTree.outFile(sys.argv[1] + ".out")
+    absTree.makePng(sys.argv[1])
 
 if __name__ == '__main__':
     main()
