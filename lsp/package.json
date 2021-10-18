@@ -1,0 +1,73 @@
+{
+  "name": "vscodezenscript",
+  "description": "Support for L language",
+  "license": "MIT",
+  "version": "1.0.0",
+  "publisher": "vscode-samples",
+  "categories": ["Snippets"],
+  "keywords": [
+    "multi-root ready"
+  ],
+  "engines": {
+    "vscode": "^1.43.0"
+  },
+  "activationEvents": [
+    "onLanguage:L"
+  ],
+  "main": "./client/out/extension",
+  "contributes": {
+    "languages": [
+      {
+        "id": "L",
+        "aliases": [
+          "L"
+        ],
+        "extensions": [
+          ".L"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "L",
+        "scopeName": "source.L",
+        "path": "./src/syntax/L.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "L",
+        "path": "./snippets.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -b",
+    "watch": "tsc -b -w",
+    "antlr4ts": "antlr4ts -o src/parser -Xexact-output-dir -visitor ./server/src/antlr/LParser.g4 ./server/src/antlr/LLexer.g4",
+    "build": "npm run antlr4ts && tsc -b"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.54.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "^4.14.1",
+    "antlr4ts-cli": "^0.5.0-alpha.4",
+    "eslint": "^7.19.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.2.1",
+    "ts-loader": "^8.0.14",
+    "typescript": "^4.1.3",
+    "vscode-test": "^1.5.0",
+    "webpack": "^5.19.0",
+    "webpack-cli": "^4.4.0"
+  },
+  "dependencies": {
+    "antlr4-c3": "^1.1.12",
+    "antlr4ts": "^0.5.0-alpha.3"
+  }
+}

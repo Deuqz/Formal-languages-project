@@ -1,0 +1,142 @@
+{
+  "fileTypes": [
+    "L"
+  ],
+  "name": "L",
+  "patterns": [
+    {
+      "comment": "numbers",
+      "name": "constant.numeric",
+      "match": "\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)([LlFfUuDd]|UL|ul)?\\b"
+    },
+    {
+      "include": "#code"
+    },
+    {
+      "comment": "arrays",
+      "name": "storage.type.object.array",
+      "match": "\\b((?:[a-z]\\w*\\.)*[A-Z]+\\w*)(?=\\[)"
+    }
+  ],
+  "repository": {
+    "code": {
+      "patterns": [
+        {
+          "include": "#class"
+        },
+        {
+          "include": "#functions"
+        },
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#var"
+        },
+        {
+          "include": "#keywords"
+        },
+        {
+          "include": "#constants"
+        },
+        {
+          "include": "#operators"
+        }
+      ]
+    },
+    "functions": {
+      "comment": "functions",
+      "name": "meta.function",
+      "match": "fun\\s+([A-Za-z_$][\\w$]*)\\s*\\((.*?)\\)",
+      "captures": {
+        "0": {
+          "name": "storage.type.function"
+        },
+        "1": {
+          "name": "entity.name.function"
+        },
+        "2":{
+          "name": "storage.type"
+        }
+      }
+    },
+    "var":{
+      "comment": "functions",
+      "name": "meta.function",
+      "match": "(.*?) *= *(.*?)",
+      "captures": {
+        "1": {
+          "name": "storage.type"
+        },
+        "2": {
+          "name": "variable.other"
+        }
+      }
+    },
+    "brackets": {
+      "patterns": [
+        {
+          "comment": "items and blocks",
+          "name": "keyword.other",
+          "match": "(<)\\b(.*?)(:(.*?(:(\\*|\\d+)?)?)?)(>)",
+          "captures": {
+            "1": {
+              "name": "keyword.control"
+            },
+            "2": {
+              "name": "keyword.other"
+            },
+            "3": {
+              "name": "keyword.control"
+            },
+            "4": {
+              "name": "variable.other"
+            },
+            "5": {
+              "name": "keyword.control"
+            },
+            "6": {
+              "name": "constant.numeric"
+            },
+            "7": {
+              "name": "keyword.control"
+            }
+          }
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "comment": "comments",
+          "name": "comment.line.double=slash",
+          "match": "#.*?#"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "comment": "statement keywords",
+          "name": "keyword.control",
+          "match": "\\b(fun|if|else|while|for|return|skip)\\b"
+        },
+        {
+          "comment": "language keywords",
+          "name": "constant.language",
+          "match": "\\b(null|true|false)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "comment": "math operators",
+          "name": "keyword.control",
+          "match": "\\b(\\.|\\.\\.|\\.\\.\\.|,|\\+|\\+=|\\+\\+|-|-=|--|~|~=|\\*|\\*=|\/|\/=|%|%=|\\||\\|=|\\|\\||&|&=|&&|\\^|\\^=|\\?|\\?\\.|\\?\\?|<|<=|<<|<<=|>|>=|>>|>>=|>>>|>>>=|=>|=|==|===|!|!=|!==|\\$|`)\\b"
+        }
+      ]
+    }
+  },
+  "scopeName": "source.L"
+}
