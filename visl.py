@@ -197,7 +197,7 @@ class CodeVisitor(LVisitor):
         #print("VisitArgsCallVal", ctx.getText())
         self.visit(ctx.val)
 
-    def visitExprExp1(self, ctx):
+    """def visitExprExp1(self, ctx):
         #print("VisitExprExp1", ctx.getText())
         #print("    val =", ctx.atom.text)
         self.curVer = self.g.addVer(self.curVer, '^')
@@ -211,9 +211,9 @@ class CodeVisitor(LVisitor):
         self.curVer = self.g.addVer(par, ctx.name.text)
         self.visit(ctx.toArgsCall())
         self.curVer = par
-        self.visit(ctx.expr())
+        self.visit(ctx.expr())"""
 
-    def visitExprExp3(self, ctx):
+    def visitExprExp(self, ctx):
         #print("VisitExprExp3", ctx.getText())
         par = self.curVer = self.g.addVer(self.curVer, '^')
         self.visit(ctx.left)
