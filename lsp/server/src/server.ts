@@ -283,7 +283,7 @@ for(let i=tok;i>0 && psp!=0;i--){
     if(ts[i].type==LLexer.AOPEN){
         psp+=1;
     }
-    if(ts[i].type==LLexer.NAME && ts[i].line < pos.line && ts[i-1].type!=LLexer.FUN){
+    if(ts[i].type==LLexer.NAME && ts[i].line < pos.line && ts[i-1].type!=LLexer.FUN && ts[i+1].type!=LLexer.BROPEN){
          names.push(ts[i].text);
          console.log(ts[i].text+" :"+ts[i].line+ " : "+ts[i].charPositionInLine);
     }
