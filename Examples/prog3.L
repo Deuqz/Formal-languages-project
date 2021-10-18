@@ -1,4 +1,4 @@
-fun func(a, b){
+fun main(a, b){
     #x = 1 < 2 > 3;#
     #x = 1;#
     #x = 2 ^ "abc";#

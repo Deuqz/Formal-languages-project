@@ -52,7 +52,16 @@ class AbstractTree:
         os.system("dot -Tpng " + nameFile + "forPNG > " + nameFile + ".png")
         os.system("rm " + nameFile + "forPNG")
 
-    
+    def checkCorrectness(self):
+        flag = False
+        for x in self.tree[0]:
+            if self.elem[x] == "main":
+                flag = True
+                break
+        if not flag:
+            print("Error! The program doesn't contain \"main\" function")
+            sys.exit(1)
+
     def addVer(self, par, s):
         self.tree.append([])
         num = len(self.tree) - 1
@@ -229,8 +238,8 @@ def main():
     parser.addErrorListener(MyErrorListener(sys.argv[1]))
     tree = parser.start()
     absTree = CodeVisitor().visit(tree)
+    absTree.checkCorrectness()
     print("Completed parsing")
-    #absTree.print()
     absTree.outFile(sys.argv[1] + ".out")
     absTree.makePng(sys.argv[1])
 
