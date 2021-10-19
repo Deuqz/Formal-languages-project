@@ -67,6 +67,7 @@ function_name __argsCall__
 2. Вывод дерева в текстовый файл \*.txt и его отрисовка в \*.png файл
 3. Обработка ошибок при парсинге
 4. Написание тестов для проверки корректности работы  
+
 Инструкция по сборке:  
 Устанавливаем *antlr*: https://github.com/antlr/antlr4/blob/master/doc/getting-started.md  
 Генерируем нужные файлы: ```antlr4 -Dlanguage=Python3 -visitor visitorL.g4```  
