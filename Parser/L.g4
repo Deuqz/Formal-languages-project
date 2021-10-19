@@ -47,7 +47,7 @@ grammar L;
           | <assoc=right> left=expr op='&&' right=expr            #exprOpBin
           | <assoc=right> left=expr op='||' right=expr            #exprOpBin
           | '(' expr ')'                                          #exprParen
-          | atom=(NAME|INT|STR)                                   #exprAtom
+          | atom=(NAME|INT|STR|BITSET)                            #exprAtom
           | name=NAME toArgsCall                                  #exprFuncCall
           ;
 
@@ -60,6 +60,8 @@ grammar L;
           ;
 
     INT   : ('0'..'9')+ ;
+
+    BITSET: 'b'('0'|'1')+ ;
 
     STR   : '"'.*?'"' ;
 
