@@ -70,7 +70,7 @@ function_name __argsCall__
 
 Инструкция по сборке:  
 Устанавливаем *antlr*: https://github.com/antlr/antlr4/blob/master/doc/getting-started.md  
-Генерируем нужные файлы: ```antlr4 -Dlanguage=Python3 -visitor visitorL.g4```  
+Генерируем нужные файлы: ```antlr4 -Dlanguage=Python3 -visitor L.g4```  
 Запускаем питоновский файл, передавая ему файл с кодом: ```python3 visitorL.py prog*.L```
 
 # Поддержка в среде разработки VSCode
