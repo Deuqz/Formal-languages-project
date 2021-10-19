@@ -1,6 +1,6 @@
 fun func(a, b){
     print(a + b);
-    a = 0;
+    return(a + b);
 }
 
 fun main(){
