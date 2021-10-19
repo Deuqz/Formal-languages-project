@@ -228,9 +228,16 @@ class MyErrorListener(ErrorListener):
 
 
 def main():
-    with open(sys.argv[1], 'r') as f:
-        inputFile = f.read()
-        print(inputFile)
+    if (len(sys.argv) == 1): 
+        print("Error! No input files")
+        sys.exit(1)
+    try:
+        with open(sys.argv[1], 'r') as f:
+            inputFile = f.read()
+            print(inputFile)
+    except Exception:
+        print("Can't open file {} for reading".format(sys.argv[1]))
+        sys.exit(1)
     lexer = LLexer(InputStream(inputFile))
     stream = CommonTokenStream(lexer)
     parser = LParser(stream)

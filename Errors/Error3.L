@@ -9,7 +9,8 @@ fun rev(M){
 }
 
 fun main(){
-    read(N);
+    #Error! No parenthesis#
+    read(N;
     rev(N);
     stopSys();
 }
