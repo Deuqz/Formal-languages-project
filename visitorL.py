@@ -60,7 +60,7 @@ class AbstractTree:
                 break
         if not flag:
             print("Error! The program doesn't contain \"main\" function")
-            sys.exit(1)
+            sys.exit(5)
 
     def addVer(self, par, s):
         self.tree.append([])
@@ -190,7 +190,7 @@ class CodeVisitor(LVisitor):
         b = op == '==' or op == '/=' or op == '<' or op == '<=' or op == '>' or op == '>='
         if (b and self.inCompTree):
             print("Error! Operator " + ctx.op.text + " is not associative")
-            sys.exit(1)
+            sys.exit(4)
         elif(b):
             self.inCompTree = True
         par = self.curVer = self.g.addVer(self.curVer, ctx.op.text)
@@ -213,18 +213,16 @@ class CodeVisitor(LVisitor):
         self.curVer = par
 
 class MyErrorListener(ErrorListener):
-    def __init__(self, fileName):
+    def __init__(self, fileName, inputFile):
         self.fileName = fileName
-        self._symbol = ''
+        self.inpFile = inputFile
 
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
-        with open(self.fileName, 'r') as fin:
-            buf = fin.read()
-            strings = buf.splitlines()
+        strings = self.inpFile.splitlines()
         print("{}:{}:{} - Error! Incorrect input".format(self.fileName, str(line), str(column)))
         print("    " + str(line) + "|" + strings[line - 1])
         print("    " + len(str(line)) * " " + "|" + column * " " + "^")
-        sys.exit(1)
+        sys.exit(3)
 
 
 def main():
@@ -237,12 +235,12 @@ def main():
             print(inputFile)
     except Exception:
         print("Can't open file {} for reading".format(sys.argv[1]))
-        sys.exit(1)
+        sys.exit(2)
     lexer = LLexer(InputStream(inputFile))
     stream = CommonTokenStream(lexer)
     parser = LParser(stream)
     parser.removeErrorListeners()
-    parser.addErrorListener(MyErrorListener(sys.argv[1]))
+    parser.addErrorListener(MyErrorListener(sys.argv[1], inputFile))
     tree = parser.start()
     absTree = CodeVisitor().visit(tree)
     absTree.checkCorrectness()
