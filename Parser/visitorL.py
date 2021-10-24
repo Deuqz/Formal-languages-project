@@ -30,9 +30,9 @@ class AbstractTree:
                         f.write(str(x) + " ")
                     f.write("\n")
                 f.write("\n")
-    
+
     def makePng(self, nameFile):
-        with open(nameFile + "forPNG", 'w') as f:
+        with open(nameFile + "forPNG.txt", 'w') as f:
             l = len(self.tree)
             f.write("digraph{\n")
             for i in range(l):
@@ -49,8 +49,8 @@ class AbstractTree:
                 for x in self.tree[i]:
                     f.write("    " + str(i) + " -> " + str(x) + "\n")
             f.write("}")
-        os.system("dot -Tpng " + nameFile + "forPNG > " + nameFile + ".png")
-        os.system("rm " + nameFile + "forPNG")
+        os.system("dot -Tpng " + nameFile + "forPNG.txt > " + nameFile + ".png")
+        os.system("rm " + nameFile + "forPNG.txt")
 
     def checkCorrectness(self):
         flag = False
@@ -129,7 +129,7 @@ class CodeVisitor(LVisitor):
 
     def visitOpSkip(self, ctx):
         self.g.addVer(self.curVer, "skip")
-        
+
     def visitOpIfElse(self, ctx):
         par = self.g.addVer(self.curVer, "if")
         self.curVer = self.g.addVer(par, "__expr__")
@@ -152,7 +152,7 @@ class CodeVisitor(LVisitor):
         self.visit(ctx.expr())
         self.curVer = self.g.addVer(par, "__body__")
         self.visit(ctx.toBody())
-    
+
     def visitOpBind(self, ctx):
         #print("    nameValToBind =", ctx.name.text)
         self.curVer = self.g.addVer(self.curVer, "=")
@@ -199,10 +199,10 @@ class CodeVisitor(LVisitor):
         self.visit(ctx.right)
         if (b):
             self.inCompTree = False
-        
+
     def visitExprParen(self, ctx):
         self.visit(ctx.expr())
-    
+
     def visitExprAtom(self, ctx):
         self.g.addVer(self.curVer, ctx.atom.text)
 
@@ -226,7 +226,7 @@ class MyErrorListener(ErrorListener):
 
 
 def main():
-    if (len(sys.argv) == 1): 
+    if (len(sys.argv) == 1):
         print("Error! No input files")
         sys.exit(1)
     try:

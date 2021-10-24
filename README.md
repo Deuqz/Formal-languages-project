@@ -76,7 +76,11 @@ function_name __argsCall__
 Инструкция по сборке:  
 Устанавливаем *antlr*: https://github.com/antlr/antlr4/blob/master/doc/getting-started.md  
 Генерируем нужные файлы: ```antlr4 -Dlanguage=Python3 -visitor L.g4```  
-Запускаем питоновский файл, передавая ему файл с кодом: ```python3 visitorL.py prog*.L```
+Запускаем питоновский файл, передавая ему файл с кодом: ```python3 visitorL.py prog.L```
+
+После парсинга кода получаем на выходе представление дерева в текстовом виде в файле ```prog.txt``` 
+и в графическом виде в файле ```prog.png```. Для генерации графического файла необходима утилита Graphviz. Установка:
+https://graphviz.org/
 
 # Поддержка в среде разработки VSCode
 1. Подсветка синтаксиса
